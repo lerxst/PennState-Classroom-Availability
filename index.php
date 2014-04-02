@@ -1,6 +1,8 @@
 <?php
+	$pageTitle = "Classrooms";
 	require_once('includes/header.php');
-	error_reporting(-1);
+
+	echo "<h1>" . $pageTitle . "</h1>";
 
 	$m = new MongoClient();
 
