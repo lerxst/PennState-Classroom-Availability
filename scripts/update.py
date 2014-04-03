@@ -50,12 +50,32 @@ for classroom in cursor:
 			currentDay = c[x+4].strip()
 			currentDay = currentDay[:11]
 			print currentDay
-			i = x
+			i = x+1
 			foundColSpan = False;
+			inTable = False;
 			while(foundColSpan is not True):
-				colMatch = re.search('colspan', c[i])
-				#print i
 				i+=1
+				# while there are still more classrooms...
+				colMatch = re.search('colspan', c[i])
+				borderMatch = re.search('table border', c[i])
+				endMatch = re.search('/table', c[i])
+				trMatch = re.search('<tr>', c[i])
 				if colMatch:
 					foundColSpan = True
+				elif borderMatch:
+					inTable = True
+				elif endMatch:
+					inTable = False
+				elif inTable is True:
+					if trMatch:
+						#print c[i+2]
+						#print c[i+4]
+						currentEvent = c[i+6].strip()
+						currentEvent = currentEvent[:-12]
 
+						startTime = c[i+2].strip()
+						startTime = startTime[:-12]
+				
+						endTime = c[i+4].strip()
+						endTime = endTime[:-12]
+						print currentEvent + " from " + startTime + " to " + endTime
