@@ -1,5 +1,5 @@
 <?php
-	$pageTitle = "Classrooms";
+	$pageTitle = "IST Classrooms";
 	require_once('includes/header.php');
 
 	echo "<h1>" . $pageTitle . "</h1>";
@@ -13,25 +13,18 @@
 
 	$cursor = $collection->find();
 	$cursor->sort(array('classroomName' => 1));
-	$eventCursor = $eventCollection->find();
 
 	foreach($cursor as $document) {
-		echo '<div class="row" style="margin-bottom:10px;">';
-		echo '<div class="col-md-3">';
-		if(isset($document["picfile"]))
+		echo '<h2>' . $document["classroomName"] . '</h2>';
+		echo "<table class=\"table\">";
+		$eventCursor = $eventCollection->find(array("room"=>$document["classroomName"]));
+		foreach($eventCursor as $event)
 		{
-			echo '<img src="' . $document["picfile"] . '" class="img-rounded" width="250" />';
+			$startTime = date(DATE_ATOM, $event["start"]->sec);
+			$endTime = date(DATE_ATOM, $event["end"]->sec);
+			echo "<tr><td>" . $event["name"] . "</td><td>" . $startTime . "</td><td>" . $endTime . "</td></tr>";
 		}
-		echo '</div>';
-		echo '<div class="col-md-9">';
-		echo '<h4>' . $document["classroomName"] . '</h4>';
-		echo '</div>';
-		echo '</div>';
-	}
-	
-	foreach($eventCursor as $document)
-	{
-		echo $document["name"] . "<br/>";
+		echo "</table>";
 	}
 	
 	require_once('includes/footer.php');
