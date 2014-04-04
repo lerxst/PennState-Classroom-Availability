@@ -9,3 +9,6 @@ This project is aimed to provide Penn State students (currently those in IST) wi
 - Add a map of the building
 - Add 'open until' for rooms that are available for less than 30 minutes
 - Possibly expand to other buildings on campus
+
+## Thanks
+Special thanks to Dan Servich for pitching this idea to me and to @mfriedenberg for his valuable input
