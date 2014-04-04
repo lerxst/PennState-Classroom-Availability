@@ -17,6 +17,7 @@
 	foreach($cursor as $document) {
 		echo '<h2>' . $document["classroomName"] . '</h2>';
 		echo "<table class=\"table\">";
+		echo "<tr><th>Event</th><th>Start</th><th>End</th></tr>";
 		$eventCursor = $eventCollection->find(array("room"=>$document["classroomName"]));
 		foreach($eventCursor as $event)
 		{
