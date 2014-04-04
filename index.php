@@ -20,8 +20,8 @@
 		$eventCursor = $eventCollection->find(array("room"=>$document["classroomName"]));
 		foreach($eventCursor as $event)
 		{
-			$startTime = date(DATE_ATOM, $event["start"]->sec);
-			$endTime = date(DATE_ATOM, $event["end"]->sec);
+			$startTime = date("D M d g:i A", $event["start"]->sec);
+			$endTime = date("D M d g:i A", $event["end"]->sec);
 			echo "<tr><td>" . $event["name"] . "</td><td>" . $startTime . "</td><td>" . $endTime . "</td></tr>";
 		}
 		echo "</table>";
