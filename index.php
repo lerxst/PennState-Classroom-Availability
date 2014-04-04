@@ -1,8 +1,8 @@
 <?php
-	$pageTitle = "IST Classrooms";
+	$pageTitle = "IST Classroom Availability";
 	require_once('includes/header.php');
 
-	echo "<h1>" . $pageTitle . "</h1>";
+	echo "<h1>" . $pageTitle . "<font color='#00ADEF'> pre-alpha</font></h1>";
 
 	$m = new MongoClient();
 
