@@ -47,14 +47,11 @@ for classroom in cursor:
 
 	recordsAdded = 0
 	
-	#print colored(classroom["classroomName"],'blue')
-
 	for x in range(41,n):
 		match = re.search('cellspacing', c[x])
 		if match:
 			currentDay = c[x+4].strip()
 			currentDay = currentDay[:11]
-			#print currentDay
 			i = x+1
 			foundColSpan = False;
 			inTable = False;
@@ -79,7 +76,7 @@ for classroom in cursor:
 						startTime = c[i+2].strip()
 						startTime = startTime[:-12]
 						startTime = currentDay + " " + startTime
-						#Mar 31 2014 12:20 PM
+						#Expected format: Mar 31 2014 12:20 PM
 				
 						endTime = c[i+4].strip()
 						endTime = endTime[:-12]
