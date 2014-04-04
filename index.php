@@ -9,9 +9,11 @@
 	$db = $m->ist;
 
 	$collection = $db->classrooms;
+	$eventCollection = $db->events;
 
 	$cursor = $collection->find();
 	$cursor->sort(array('classroomName' => 1));
+	$eventCursor = $eventCollection->find();
 
 	foreach($cursor as $document) {
 		echo '<div class="row" style="margin-bottom:10px;">';
@@ -26,5 +28,11 @@
 		echo '</div>';
 		echo '</div>';
 	}
+	
+	foreach($eventCursor as $document)
+	{
+		echo $document["name"] . "<br/>";
+	}
+	
 	require_once('includes/footer.php');
 ?>
