@@ -6,7 +6,7 @@ from datetime import datetime
 from termcolor import colored
 import requests
 import re
-
+import time
 
 print colored("\n    _____                    _____ _        _      \n\
    |  __ \                  / ____| |      | |      \n\
@@ -22,6 +22,7 @@ print colored("   | |    (_)                | |  | |               \n\
                                                   \n\
                                                   ","white");
 print("Running Penn State Classroom update................\n");
+today = time.strftime("%m/%d/%Y")
 
 connection = pymongo.Connection()
 
@@ -36,7 +37,7 @@ classrooms = db["classrooms"]
 cursor = db.classrooms.find()
 
 for classroom in cursor:
-	url = "https://clc.its.psu.edu/labhours/RoomPrintout.aspx?&room=" + str(classroom["psuId"]) + "&days=7&date=03/30/2014"
+	url = "https://clc.its.psu.edu/labhours/RoomPrintout.aspx?&room=" + str(classroom["psuId"]) + "&days=150&date=" + today
 	r = requests.get(url)
 	c = r.content
 	c = c.split('\n')
