@@ -1,6 +1,5 @@
 <?php
 	$currentTime = time();	
-	//echo date("D M d g:i A", $currentTime);
 
 	$pageTitle = "IST Classroom Availability";
 	require_once('includes/header.php');
@@ -24,20 +23,28 @@
 		$eventCursor = $eventCollection->find(array("room"=>$document["classroomName"]));
 		foreach($eventCursor as $event)
 		{
-			$inprogress = false;
-			if($event["start"]->sec < time() && $event["end"]->sec > time())
+			$startTs = $event['start']->sec;
+			$endTs = $event['end']->sec;
+			$timeTs = strtotime('-4 hours');
+			$start = date('D M d g:i A', $startTs);
+			$end = date('D M d g:i A', $endTs);
+			$time = date('D M d g:i A', $timeTs);
+			
+			if($endTs >= $timeTs && date('Y-m-d', $timeTs) == date('Y-m-d', $startTs))
 			{
-				$inprogress = true;
+				$inProgress = false;
+				if($startTs <= $timeTs && $endTs >= $timeTs)
+				{
+					$inProgress = true;
+				}
+				echo '<tr><td>' . $event['name'];
+				if($inProgress)
+				{
+					echo '<font color="#00ADEF">&nbsp;&nbsp;<b>In Progress</b></font>';
+				}
+				echo '</td><td>' . $start . '</td><td>' . $end . '</td>';
+				echo '</tr>';
 			}
-			$startTime = date("D M d g:i A", $event["start"]->sec);
-			$endTime = date("D M d g:i A", $event["end"]->sec);
-			echo "<tr><td>" . $event["name"] . "</td><td>" . $startTime . "</td><td>" . $endTime . "</td>";
-			//echo "<td>" . $event["start"]->sec . "</td><td>" . $event["end"]->sec  . "</td>";
-			//echo "<td>" . $currentTime . "</td>";
-			if($inprogress)
-				//echo "<td><b>In progress</b></td>";
-			echo "</tr>";
-
 		}
 		echo "</table>";
 	}
