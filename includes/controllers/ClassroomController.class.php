@@ -93,7 +93,7 @@ class ClassroomController
     /** Get classrooms */
     public function getClassrooms()
     {
-        $sql = 'SELECT * FROM classroom_associations';
+        $sql = 'SELECT * FROM classroom_associations ORDER BY classroom_name ASC';
         if($stmt = $this->dbHandle->prepare($sql))
         {
             $stmt->execute();
