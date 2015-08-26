@@ -24,8 +24,8 @@
                         { ?>
                         <tr>
                             <td><?php echo $schedule['class_name']; if($schedule['in_progress']){?><font color="#00ADEF">&nbsp;&nbsp;in progress</font><?php } ?></td>
-                            <td><?php echo date('Y-m-d g:i A', strtotime($schedule['start_time'])); ?></td>
-                            <td><?php echo date('Y-m-d g:i A', strtotime($schedule['end_time'])); ?></td>
+                            <td><?php echo date('g:i A', strtotime($schedule['start_time'])); ?></td>
+                            <td><?php echo date('g:i A', strtotime($schedule['end_time'])); ?></td>
                         </tr>
                         <?php } ?>
                     </table>
