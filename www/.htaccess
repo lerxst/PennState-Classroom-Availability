@@ -1,0 +1,13 @@
+## Disable indexing and multiviews
+Options -Indexes
+Options -MultiViews 
+
+## Allow rewriting
+RewriteEngine on
+RewriteBase /
+
+## Set directory index
+DirectoryIndex                      /dispatcher.php?controller=classroom&page=view
+
+## Page rewrites
+RewriteRule ^index.php              /dispatcher.php?controller=classroom&page=view              [NC,QSA,L]
