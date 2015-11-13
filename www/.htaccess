@@ -10,4 +10,5 @@ RewriteBase /
 DirectoryIndex                      /dispatcher.php		
 
 ## Page rewrites
-RewriteRule ^index.php              /dispatcher.php?controller=classroom	              [NC,QSA,L]
+RewriteRule ^update					/dispatcher.php?controller=classroom&page=update		[NC,QSA,L]
+RewriteRule ^index.php              /dispatcher.php?controller=classroom					[NC,QSA,L]
