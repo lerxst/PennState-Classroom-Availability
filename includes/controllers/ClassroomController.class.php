@@ -77,6 +77,9 @@ class ClassroomController
     /** Handle update */
     public function handleUpdate()
     {
+		if ($this->getNumberOfUpdates(date('Y-m-d')) > 0)
+			die('The website has already been updated today.');
+
         error_reporting(E_ERROR | E_PARSE);
         $classrooms = $this->getClassrooms();
 
@@ -137,6 +140,10 @@ class ClassroomController
             sleep(2);
         }
 
+		// Mark as updated
+		$this->addUpdate(date('Y-m-d'));
+
+		// Close request
 		die('Website successfully updated.');
     }
     
@@ -192,6 +199,35 @@ class ClassroomController
 		} else {
 			throw new Exception('Failed to add class.');
 		}
+	}
+
+	/** Add update */
+	protected function addUpdate($date)
+	{
+		$sql = 'INSERT INTO website_updates(update_date) VALUES (?)';
+		if ($stmt = $this->dbHandle->prepare($sql))
+		{
+			$stmt->bind_param('s', $date);
+			$stmt->execute();
+		} else {
+			throw new Exception('Failed to add update.');
+		}
+	}
+
+	/** Get number of updates for date */
+	protected function getNumberOfUpdates($date)
+	{
+		$sql = 'SELECT COUNT(*) FROM website_updates WHERE update_date = ?';
+		if ($stmt = $this->dbHandle->prepare($sql))
+		{
+			$stmt->bind_param('s', $date);
+			$stmt->bind_result($cnt);
+			$stmt->execute();
+			$stmt->fetch();
+			return $cnt;
+		}
+
+		return 0;
 	}
     
 }
