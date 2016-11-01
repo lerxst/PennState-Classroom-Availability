@@ -44,13 +44,18 @@ class ClassroomController
             $classroom['schedules'] = array();
         }
         unset($classroom);
+
+		// Date
+		$date = date('Y-m-d', time());
+		if (isset($_GET['date']))
+			$date = date('Y-m-d', strtotime($_GET['date']));
         
         // Assign schedules to classrooms
         $schedule = null;
         foreach ($schedules as &$schedule)
         {
             // Check that event hasn't occurred and is today
-            if (time() < strtotime($schedule['end_time']) && date('Y-m-d', time()) === date('Y-m-d', strtotime($schedule['start_time'])))
+            if (time() < strtotime($schedule['end_time']) && $date === date('Y-m-d', strtotime($schedule['start_time'])))
             {
                 // Check for in progress
                 $inProgress = (time() > strtotime($schedule['start_time']) && time() < strtotime($schedule['end_time'])) ? true : false;
