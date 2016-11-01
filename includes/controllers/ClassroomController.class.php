@@ -126,7 +126,7 @@ class ClassroomController
 						$class['name'] = preg_replace('/\s+/', ' ', $class['name']);
 
 						// Add to database
-						$this->addClass($classroom['psu_room_id'], $class['start'], $class['end'], $event);
+						$this->addClass($classroom['psu_room_id'], $class['start'], $class['end'], $class['name']);
 					}
 				}
 			}
