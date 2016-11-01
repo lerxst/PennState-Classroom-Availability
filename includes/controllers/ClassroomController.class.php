@@ -39,7 +39,7 @@ class ClassroomController
         
         // Assign schedule arrays to classrooms
         $classroom = null;
-        foreach($classrooms as &$classroom)
+        foreach ($classrooms as &$classroom)
         {
             $classroom['schedules'] = array();
         }
@@ -47,10 +47,10 @@ class ClassroomController
         
         // Assign schedules to classrooms
         $schedule = null;
-        foreach($schedules as &$schedule)
+        foreach ($schedules as &$schedule)
         {
             // Check that event hasn't occurred and is today
-            if(time() < strtotime($schedule['end_time']) && date('Y-m-d', time()) === date('Y-m-d', strtotime($schedule['start_time'])))
+            if (time() < strtotime($schedule['end_time']) && date('Y-m-d', time()) === date('Y-m-d', strtotime($schedule['start_time'])))
             {
                 // Check for in progress
                 $inProgress = (time() > strtotime($schedule['start_time']) && time() < strtotime($schedule['end_time'])) ? true : false;
@@ -83,61 +83,51 @@ class ClassroomController
         error_reporting(E_ERROR | E_PARSE);
         $classrooms = $this->getClassrooms();
 
-        foreach($classrooms as $classroom) {            
-            $page = file('https://clc.its.psu.edu/labhours/RoomPrintout.aspx?&room=' . $classroom['psu_room_id'] . '&days=150&date=' . date('m/d/y', time()));
-            
-            $explode = explode('Name">', $page[17]);
-            
-            $roomNumber = $explode[1];
-            $roomNumber = current(explode("<", $roomNumber));
-            $startDate  = substr($page[19], 47, 6);
-            $endDate    = substr($page[20], 45, 5);
-            
-            $updateQuery = "";
-            
-            $numLines = count($page) - 1;
-            
-            $newDayIndex      = array();
-            $newDayIndexIndex = 0;
-            
-            $dateArray = array();
-            
-            for ($i = 41; $i < $numLines; $i++) {
-                if (preg_match('/cellspacing/', $page[$i])) {
-                    $newDayIndex[$newDayIndexIndex] = $i;
-                    $dateArray[$newDayIndexIndex]   = current(explode("<", $page[$i + 4]));
-                    $newDayIndexIndex++;
-                }
-            }
-            
-            $counter        = 1;
-            $tableArray     = array();
-            $newDayIndex[7] = 999;
-            for ($i = 0; $i < count($newDayIndex); $i++) {
-                $counter = $newDayIndex[$i];
-                $j       = 0;
-                while ($counter < $newDayIndex[$i + 1]) {
-                    if (preg_match('/table border/', $page[$counter])) {
-                        $tableArray[$i][$j] = $counter;
-                        $j++;
-                    }
-                    $counter++;
-                }
-            }
-            
-            for ($i = 0; $i < count($dateArray); $i++) {
-                foreach ($tableArray[$i] as &$test) {
-                    $start = current(explode("<", $page[$test + 3]));
-                    $end   = current(explode("<", $page[$test + 5]));
-                    $start = strtotime($dateArray[$i] . ' ' . $start);
-                    $end   = strtotime($dateArray[$i] . ' ' . $end);
-                    $event = trim(current(explode("<", $page[$test + 7])));
+        foreach ($classrooms as $classroom) {
 
-					// Add to database
-					$this->addClass($classroom['psu_room_id'], date('Y-m-d H:i:s', $start), date('Y-m-d H:i:s', $end), $event);
-                }
-            }
-            sleep(2);
+			// Get data
+			$data = json_encode(array(
+				'url' => 'https://clc.its.psu.edu/labhours/RoomPrintout.aspx?&room=' . $classroom['psu_room_id'] . '&days=150&date=' . date('m/d/y', time())
+			));
+
+			// Make request
+			$ch = curl_init('https://iecvames6d.execute-api.us-east-1.amazonaws.com/prod/classroom');
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			    'Content-Type: application/json',
+			    'Content-Length: ' . strlen($data))
+			);
+
+			// Get result
+			$result = curl_exec($ch);
+
+			// Decode JSON
+			if ($classroomData = json_decode($result, true))
+			{
+				// Process dates
+				foreach ($classroomData as $day => $classes)
+				{
+					foreach ($classes as $class)
+					{
+						// Clean up start time
+						$class['start'] = date('Y-m-d H:i:s', strtotime($day . ' ' . $class['start']));
+
+						// Clean up end time
+						$class['end'] = date('Y-m-d H:i:s', strtotime($day . ' ' . $class['end']));
+
+						// Clean up name
+						$class['name'] = preg_replace('/\s+/', ' ', $class['name']);
+
+						// Add to database
+						$this->addClass($classroom['psu_room_id'], $class['start'], $class['end'], $event);
+					}
+				}
+			}
+
+			// Sleep for 1 second
+			sleep(1);
         }
 
 		// Mark as updated
@@ -151,7 +141,7 @@ class ClassroomController
     public function getClassroomSchedules()
     {
         $sql = 'SELECT * FROM classroom_schedules WHERE start_time >= CURDATE()';
-        if($stmt = $this->dbHandle->prepare($sql))
+        if ($stmt = $this->dbHandle->prepare($sql))
         {
             $stmt->execute();
             $result = $stmt->get_result();
@@ -171,7 +161,7 @@ class ClassroomController
     public function getClassrooms()
     {
         $sql = 'SELECT * FROM classroom_associations ORDER BY classroom_name ASC';
-        if($stmt = $this->dbHandle->prepare($sql))
+        if ($stmt = $this->dbHandle->prepare($sql))
         {
             $stmt->execute();
             $result = $stmt->get_result();
